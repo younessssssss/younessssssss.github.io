@@ -32,10 +32,12 @@ twitter_username: younessssssss
 github_username: younessssssss
 
 # Build settings
-theme: minima
+remote_theme: jekyll/minima
 plugins:
   - jekyll-feed
   - jekyll-sitemap
+  - jekyll-remote-theme
+google_analytics: G-11S3BWHXR7  
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
