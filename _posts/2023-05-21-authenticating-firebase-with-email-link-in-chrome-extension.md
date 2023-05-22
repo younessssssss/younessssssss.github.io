@@ -19,7 +19,7 @@ We begin by setting up our Chrome extension project using crxjs and Vite.
 
 3. **Update the Vite Config:** Update your `vite.config.js` file to include the crxjs plugin and the manifest file. The `vite.config.js` should look like this:
 
-   ```javascript
+```javascript
    import { defineConfig } from "vite";
    import react from "@vitejs/plugin-react";
    import { crx } from "@crxjs/vite-plugin";
@@ -28,24 +28,28 @@ We begin by setting up our Chrome extension project using crxjs and Vite.
    export default defineConfig({
      plugins: [react(), crx({ manifest })],
    });
-   ```
+```
 
 4. **Create the Manifest File:** Add a `manifest.json` file next to your `vite.config.js` file with the necessary Chrome Extension's properties. Here's a simple `manifest.json` structure:
 
-   ```json
+```json
    {
      "manifest_version": 3,
      "name": "CRXJS React Vite Example",
      "version": "1.0.0",
-     "action": { "default_popup": "index.html" }
+     "action": { "default_popup": "index.html" },
+
+     "background": {
+       "service_worker": "src/background.js",
+       "type": "module"
+     },
+     "permissions": ["tabs", "storage"]
    }
-   ```
+```
 
 5. **Run the Development Build:** Execute `npm run dev` to start the development build of your project.
 
 For more detailed guidance, you can refer back to the [original crxjs guide](https://crxjs.dev/vite-plugin/getting-started/react/create-project).
-
-Stay tuned for the next post where we'll dive into setting up Firebase for our Chrome Extension!
 
 ## Authentication Flow
 
@@ -64,74 +68,129 @@ Now let's break down these steps in detail in the next section.
 
 ## Detailed Authentication Flow
 
-The detailed explanation of the authentication flow involves diving into the code that makes this possible:
-
 ### Step 1: User Enters Email on the Login Page
 
-The Login Page uses React's useState hook to handle the user's email and onSubmit to handle the form submission. It also uses the `sendSignInLinkToEmail` function from our `firebase.js` to send this email to Firebase for email link authentication.
-
-    ```jsx
-    // LoginPage.js
+```jsx
     import { useState } from 'react';
-    import { sendSignInLinkToEmail } from './firebase.js';
+    import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
+    import styles from '../styles/LoginPage.module.css';
 
-    function LoginPage() {
+      function LoginPage() {
       const [email, setEmail] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [isSuccess, setIsSuccess] = useState(false);
+
+      const handleEmailChange = (event) => {
+      setEmail(event.target.value);
+      setIsSuccess(false);
+      };
 
       const handleSubmit = async (event) => {
-        event.preventDefault();
-        const actionCodeSettings = {
-          // URL you want to redirect back to.
-          url: 'https://YOUR_EXTENSION_URL',
-          handleCodeInApp: true
-        };
-        await sendSignInLinkToEmail(email, actionCodeSettings);
+      event.preventDefault();
+      setIsLoading(true);
+
+    try {
+      // Configure the action code settings
+      const actionCodeSettings = {
+        url: 'http://localhost:3000/',
+        handleCodeInApp: true,
+      };
+
+      // Send the sign-in email link
+      await sendSignInLinkToEmail(getAuth(), email, actionCodeSettings);
+
+
+      // Save the email for sign-in completion in the service worker
+      chrome.runtime.sendMessage({ type: 'SET_EMAIL_FOR_SIGN_IN', email });
+
+
+      setIsLoading(false);
+      setIsSuccess(true);
+    } catch (error) {
+      console.error('Error sending sign-in email link:', error);
+      setIsLoading(false);
+    }
+
       };
 
       return (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Enter email"
-            required
-          />
-          <button type="submit">Sign in with Email</button>
-        </form>
-      );
-    }
 
-    export default LoginPage;
-    ```
+      <div className={styles.container}>
+      {!isSuccess && (
+      <form onSubmit={handleSubmit} className={styles.form}>
+      <label className={styles.label}>
+      Email:
+      <input
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    className={styles.input}
+                  />
+      </label>
+      <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={styles.button}
+                >
+      {isLoading ? 'Loading...' : 'Login'}
+      </button>
+      </form>
+      )}
+      {isSuccess && (
+      <p className={styles.successMessage}>
+      Login email successfully sent! Please check your email.
+      </p>
+      )}
+      </div>
+      );
+      }
+
+      export default LoginPage;
+```
 
 ### Step 2: Firebase Sends an Email Link to the User
 
-Our Firebase configuration and initialization happen in `firebase.js`, where we also export the `sendSignInLinkToEmail` function. This function, when called, instructs Firebase to send an email link to the user.
 
-    ```javascript
-    // firebase.js
-    import firebase from 'firebase/app';
-    import 'firebase/auth';
+```javascript
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
-    const config = {
-      // Your Firebase configuration
-    };
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-    firebase.initializeApp(config);
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const apiKey = import.meta.env.VITE_APP_FIREBASE_API_KEY;
+const authDomain = import.meta.env.VITE_APP_FIREBASE_AUTH_DOMAIN;
+const projectId = import.meta.env.VITE_APP_FIREBASE_PROJECT_ID;
+const storageBucket = import.meta.env.VITE_APP_FIREBASE_STORAGE_BUCKET;
+const messagingSenderId = import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID;
+const appId = import.meta.env.VITE_APP_FIREBASE_APP_ID;
+const measurementId = import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID;
 
-    export const sendSignInLinkToEmail = (email, actionCodeSettings) => {
-      return firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
-    };
+const firebaseConfig = {
+  apiKey: apiKey,
+  authDomain: authDomain,
+  projectId: projectId,
+  storageBucket: storageBucket,
+  messagingSenderId: messagingSenderId,
+  appId: appId,
+  measurementId: measurementId,
+};
 
-    export const auth = firebase.auth
-    ```
+// Initialize Firebase
+const firebase = initializeApp(firebaseConfig);
+const auth = getAuth(firebase);
+export { auth };
+export default firebase;
+
+```
 
 ### Step 3: User Clicks the Email Link and Is Redirected Back to the Chrome Extension
 
 The `background.js` script captures the email link when the user is redirected back to the extension. It sends a message with the URL to the content script, notifying it of the URL change.
 
-    ```javascript
+```javascript
     // background.js
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "SET_EMAIL_FOR_SIGN_IN") {
@@ -166,41 +225,65 @@ The `background.js` script captures the email link when the user is redirected b
       }
     }
     });
-
-    ```
+```
 
 ### Step 4: Chrome Extension Confirms Authentication and Grants the User Access
 
 The `UserProvider` component receives the email link and uses it to authenticate the user with Firebase. If authenticated successfully, the user's data is stored in the `UserContext`.
 
-    ```jsx
-    // UserProvider.js
-    import { createContext, useState, useEffect } from 'react';
-    import { auth } from './firebase.js';
+```jsx
+// UserProvider.jsx
+import { createContext, useState, useEffect } from "react";
+import { auth } from "../firebase";
+import { signInWithEmailLink } from "firebase/auth";
 
-    export const UserContext = createContext();
+export const UserContext = createContext();
 
-    const UserProvider = ({ children }) => {
-      const [user, setUser] = useState(null);
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  // add if the state of auth are checked
 
-      useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          setUser(user);
+  useEffect(() => {
+    let unsubscribeAuth = null;
+
+    unsubscribeAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        setUser({
+          uid: userAuth.uid,
+          email: userAuth.email,
         });
+      } else {
+        setUser(null);
+      }
+    });
 
-        // Cleanup subscription on unmount
-        return () => unsubscribe();
-      }, []);
-
-      return (
-        <UserContext.Provider value={user}>
-          {children}
-        </UserContext.Provider>
-      );
+    // Listen for messages from the service worker
+    const handleMessage = async (request) => {
+      if (request.type === "emailLink") {
+        console.log("emailLink from background.js");
+        await signInWithEmailLink(auth, request.email, request.emailLink);
+      }
     };
 
-    export default UserProvider;
-    ```
+    chrome.runtime.onMessage.addListener(handleMessage);
+
+    return () => {
+      if (unsubscribeAuth) {
+        unsubscribeAuth();
+      }
+
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ user }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+```
 
 With that, you should have a comprehensive understanding of the email link authentication process in a Firebase-integrated Chrome extension.
 
