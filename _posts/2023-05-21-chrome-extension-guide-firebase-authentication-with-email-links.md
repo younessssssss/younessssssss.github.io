@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Chrome Extension Guide: Firebase Authentication with Email Links"
-date: 2023-05-21
+date: 2023-05-28
 categories: Chrome Extension Firebase Authentication
 ---
 
