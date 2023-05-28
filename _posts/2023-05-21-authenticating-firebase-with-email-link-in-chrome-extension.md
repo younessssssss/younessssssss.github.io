@@ -1,27 +1,25 @@
 ---
 layout: post
-title: "Authenticating Firebase with an Email Link in a Chrome Extension"
+title: "Chrome Extension Guide: Firebase Authentication with Email Links"
 date: 2023-05-21
 categories: Chrome Extension Firebase Authentication
 ---
 
 {% include author_bio.html %}
-# Authenticating Firebase with an Email Link in a Chrome Extension
+# Introduction to Firebase Authentication in Chrome Extensions
 
 In this post, we'll be exploring the process of setting up a Chrome extension project and integrating Firebase for email link authentication.
 
-
 ## Table of Contents
-- [Authenticating Firebase with an Email Link in a Chrome Extension](#authenticating-firebase-with-an-email-link-in-a-chrome-extension)
-  - [Table of Contents](#table-of-contents)
-  - [Setting up the Chrome Extension Project](#setting-up-the-chrome-extension-project)
-  - [Authentication Flow](#authentication-flow)
-  - [Detailed Authentication Flow](#detailed-authentication-flow)
-    - [Step 1: User Enters Email on the Login Page](#step-1-user-enters-email-on-the-login-page)
-    - [Step 2: Firebase Sends an Email Link to the User](#step-2-firebase-sends-an-email-link-to-the-user)
-    - [Step 3: User Clicks the Email Link and Is Redirected Back to the Chrome Extension](#step-3-user-clicks-the-email-link-and-is-redirected-back-to-the-chrome-extension)
-    - [Step 4: Chrome Extension Confirms Authentication and Grants the User Access](#step-4-chrome-extension-confirms-authentication-and-grants-the-user-access)
-  - [Conclusion](#conclusion)
+- [Introduction](#introduction-to-firebase-authentication-in-chrome-extensions)
+- [Setting up the Chrome Extension Project](#setting-up-the-chrome-extension-project)
+- [Overview of the Authentication Flow](#authentication-flow)
+- [Detailed Authentication Flow](#detailed-authentication-flow)
+  - [Step 1: User Enters Email](#step-1-user-enters-email)
+  - [Step 2: Firebase Sends an Email Link](#step-2-firebase-sends-an-email-link)
+  - [Step 3: User Clicks the Email Link](#step-3-user-clicks-the-email-link)
+  - [Step 4: Extension Confirms Authentication](#step-4-extension-confirms-authentication)
+- [Conclusion](#conclusion)
 
 ## Setting up the Chrome Extension Project
 
@@ -80,7 +78,7 @@ The following flow diagram represents this process:
 
 Let's break down these steps in detail.
 
-### Step 1: User Enters Email on the Login Page
+### Step 1: User Enters Email
 This React component, LoginPage, collects the user's email and sends a Firebase authentication link. The handleSubmit function sends the email link when the form is submitted. If the email link is successfully sent, a success message is displayed. If an error occurs, it's logged to the console.
 
 Here's the code snippet for the LoginPage component:
@@ -111,9 +109,9 @@ function LoginPage() {
 export default LoginPage;
 
 ```
-Please refer to the complete version on GitHub for more details.
+Check the complete version on [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) for more details.
 
-### Step 2: Firebase Sends an Email Link to the User
+### Step 2: Firebase Sends an Email Link
 
 ```javascript
 import { initializeApp } from "firebase/app";
@@ -133,9 +131,9 @@ export default firebase;
 
 
 ```
-Check the complete version on GitHub for more details.
+Check the complete version on [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) for more details.
 
-### Step 3: User Clicks the Email Link and Is Redirected Back to the Chrome Extension
+### Step 3: User Clicks the Email Link
 
 The `background.js` script captures the email link when the user is redirected back to the extension. It sends a message with the URL to the content script, notifying it of the URL change.
 
@@ -152,9 +150,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 ```
+Check the complete version on [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) for more details.
 
-
-### Step 4: Chrome Extension Confirms Authentication and Grants the User Access
+### Step 4: Extension Confirms Authentication
 
 The `UserProvider` component receives the email link and uses it to authenticate the user with Firebase. If authenticated successfully, the user's data is stored in the `UserContext`.
 
@@ -182,13 +180,10 @@ export const UserProvider = ({ children }) => {
 
 
 ```
-
+Check the complete version on [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) for more details.
 
 ## Conclusion
 
-In this post, we've explored the integration of Firebase with a Chrome extension for secure email link authentication. We covered the project setup, examined the authentication flow, and demyst
+We appreciate your feedback! If this post added value to your work, we encourage you to share it with your network on social media. For those interested in contributing to or collaborating on this project, please visit the project's [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) and consider making a pull request.
 
-
-Your feedback is valuable! If you found this post useful, don't hesitate to share it on social media or leave a comment below. If you'd like to contribute or collaborate on this project, head over to the project's [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) and feel free to make a pull request.
-
-For any inquiries or potential collaboration, feel free to get in touch.
+For inquiries or potential collaborations, don't hesitate to reach out.
