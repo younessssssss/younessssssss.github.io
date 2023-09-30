@@ -1,0 +1,1 @@
+make the content and info the center of the website like https://circlelabs.xyz/
