@@ -21,10 +21,7 @@
 title: 🚀 Younessssssss The Coder
 email:
 description: >- # this means to ignore newlines until "baseurl:"
-  Hello! 👋 I'm a developer who's had my share of ups and downs. 🎢 I've worked on cool projects,
-  but sometimes, things didn't go as planned. 
-  🙈 But hey, that's part of the journey, right? This blog is about turning those 'Oops' into 'Eureka' moments! 🎉 I'll share my lessons,tips, and the fun stuff I've learned along the way.
-  So, let's navigate this coding adventure together! 😊"
+  Hello! 👋
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://younessssssss.github.io" # the base hostname & protocol for your site, e.g. http://example.com
