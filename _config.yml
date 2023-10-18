@@ -39,6 +39,9 @@ plugins:
   - jekyll-remote-theme
 
 google_analytics: G-11S3BWHXR7
+
+minima:
+  skin: auto
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
