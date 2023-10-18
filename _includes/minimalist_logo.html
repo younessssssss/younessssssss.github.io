@@ -1,0 +1,28 @@
+<style>
+  @font-face {
+    font-family: "MarioKartDS";
+    src: url("{{ site.baseurl }}/assets/fonts/Mario-Kart-DS.ttf")
+      format("truetype");
+  }
+
+  canvas {
+    image-rendering: pixelated;
+  }
+</style>
+
+<div class="logo-container">
+  <div class="pixel-art-text">
+    <canvas id="myCanvas" width="512" height="30"></canvas>
+  </div>
+</div>
+<script>
+  const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
+  // Font loading
+  document.fonts.load("12px 'MarioKartDS'").then(() => {
+    ctx.font = "30px 'MarioKartDS'";
+    ctx.fillStyle = "white";
+    ctx.fillText("YOUNESSSSSS", 10, 20);
+  });
+</script>
+<!-- <script src="{{ site.baseurl }}/assets/js/script.js"></script> -->

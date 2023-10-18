@@ -1,0 +1,21 @@
+.pixel-art-text {
+  font-family: monospace;
+  font-size: 48px;
+  color: black;
+}
+
+.letter {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
