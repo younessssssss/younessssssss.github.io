@@ -3,6 +3,7 @@ layout: post
 title: "Chrome Extension Guide: Firebase Authentication with Email Links"
 date: 2023-05-28
 categories: Chrome Extension Firebase Authentication
+comments: true
 ---
 
 {% include author_bio.html %}
@@ -184,8 +185,4 @@ Check the complete version on [GitHub repository](https://github.com/younessssss
 
 ## Conclusion
 
-We appreciate your feedback! If this post added value to your work, we encourage you to share it with your network on social media. For those interested in contributing to or collaborating on this project, please visit the project's [GitHub repository](https://github.com/younessssssss/firebase-chrome-ext-auth) and consider making a pull request.
-
-For inquiries or potential collaborations, don't hesitate to reach out.
-
-Chrome-Extension-Guide-Firebase-Authentication-with-Email-Links
+Feel free to comment below if you have any thoughts or questions. Your input is highly appreciated!

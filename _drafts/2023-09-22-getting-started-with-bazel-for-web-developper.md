@@ -108,14 +108,22 @@ npm = use_extension("@aspect_rules_js//npm:extensions.bzl",
  "npm", dev_dependency = True)
 npm.npm_translate_lock(
     name = "npm",
+    bins = {
+        "react-scripts": [
+            "react-scripts=./bin/react-scripts.js",
+        ],
+    },
     data = [
         "//:package.json",
+        "//:pnpm-workspace.yaml",
+        "//:packages/my-app/package.json",
     ],
     npmrc = "//:.npmrc",
     pnpm_lock = "//:pnpm-lock.yaml",
     verify_node_modules_ignored = "//:.bazelignore",
     update_pnpm_lock = 1,
 )
+
 use_repo(npm, "npm")
 ```
 
@@ -144,7 +152,7 @@ cra_bin.react_scripts(
     out_dirs = ["build"],
 )
 ```
-`@npm//:react-scripts/package_json.bzl` this  is  called a label
+`@npm//:react-scripts/package_json.bzl` this  is  called a [Bazel labels]()
 let learn about lables and learn how  to read them flow this link link[]
 
 
@@ -168,9 +176,12 @@ everthing build fine ,one think to note is that this bazel rule use `pnpm` so in
 ```
 
 
-if you want to check where  basel  put external repositories  ,you  can  use the cmd :
+note that we are using pnpm workspaces
+you need to run this commende to generate the pnpm lock file:
+`bazel run -- @pnpm//:pnpm --dir $PWD install --lockfile-only`
 
-`cd $(bazel info output_base)/external`
 
 
-then read extensivley the rulesjs "https://github.com/aspect-build/rules_js/tree/main/docs"
+Check the complete version on [GitHub repository](https://github.com/younessssssss/Bazel-React-Monorepo-Example) for more details.
+
+Feel free to comment below if you have any thoughts or questions. Your input is highly appreciated!
