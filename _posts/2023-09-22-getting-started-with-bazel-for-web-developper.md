@@ -7,6 +7,7 @@ comments: true
 ---
 
 
+> Check the complete version of the monorepo code [here](https://github.com/younessssssss/Bazel-React-Monorepo-Example) .
 
 
 In this post, I want to share my story of how I started experimenting with Bazel and eventually fell in love with it.
@@ -182,6 +183,6 @@ one think to note is that this bazel rule use `pnpm` so in `package.json` need t
 
 
 
-Check the complete version on [GitHub repository](https://github.com/younessssssss/Bazel-React-Monorepo-Example) for more details.
+
 
 Feel free to comment below if you have any thoughts or questions. Your input is highly appreciated!
