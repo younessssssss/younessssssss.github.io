@@ -30,17 +30,15 @@ A label is the name that references a target for a specific package:
 
 A label is constructed of three parts:
 
-- The repository name identified with @myrepo.
-- The root path to the package (where the BUILD file of the package is located) //packages/myapp.
-- Lastly, the target name (a name or a path depending on if the target is a rule or file) :targetname.
+- The repository name identified with `@myrepo`.
+- The root path to the package (where the BUILD file of the package is located) `//packages/myapp`.
+- Lastly, the target name (a name or a path depending on the target if is a rule or file) `:targetname`.
 
 If a target is a file, the name of the target is the path to the file from where the BUILD file is located:
 
-`@myrepo//packages/myapp:testdata/input.txt``
+`@myrepo//packages/myapp:testdata/input.txt`
 
 For example, here, the name of the target is `testdata/input.txt`.
 
-
-
-
+## To Be Continued
 
