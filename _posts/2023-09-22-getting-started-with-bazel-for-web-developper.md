@@ -129,7 +129,7 @@ use_repo(npm, "npm")
 
 
 
-One very important note:  `rules_js`  relies on  `pnpm-lock.yaml`. 
+`rules_js`  relies on  `pnpm-lock.yaml`. 
 
 Run this commende to generate the pnpm lock file:
 
