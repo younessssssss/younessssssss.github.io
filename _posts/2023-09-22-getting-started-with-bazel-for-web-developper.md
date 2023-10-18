@@ -182,7 +182,6 @@ one think to note is that this bazel rule use `pnpm` so in `package.json` need t
 
 
 
-
-to test this what we have done in this blog post Check the complete version on [GitHub repository](https://github.com/younessssssss/Bazel-React-Monorepo-Example) for more details.
+Check the complete version on [GitHub repository](https://github.com/younessssssss/Bazel-React-Monorepo-Example) for more details.
 
 Feel free to comment below if you have any thoughts or questions. Your input is highly appreciated!
