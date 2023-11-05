@@ -1,14 +1,12 @@
 ---
 layout: post
 title: "Getting started with Bazel for web developers"
-banner : assets/svg/bazel.svg
+banner: assets/svg/bazel.svg
 title_picture: assets/svg/bazel.svg
 comments: true
 ---
 
-
 > Check the complete version of the monorepo code [here](https://github.com/younessssssss/Bazel-React-Monorepo-Example) .
-
 
 In this post, I want to share my story of how I started experimenting with Bazel and eventually fell in love with it.
 
@@ -17,14 +15,15 @@ To understand why Bazel exists, let's go back to the basics. As a self-taught de
 A C++ programmer would have no trouble understanding why Bazel is useful and how to use it. C++ developers typically have a mindset of understanding how things work under the hood. However, modern web developers, especially those confined to frameworks, often lack this understanding due to the numerous layers of abstraction added on top of the actual software workings.
 
 Let me remind you how any software works:
+
 > source code > build process > executable
 
-If you don't understand how your application goes from source code to an executable, you won't be able to effectively use Bazel to organize your development process for that application. Unfortunately, the majority of React developers don't even know what  `npm run build`  does under the hood.
+If you don't understand how your application goes from source code to an executable, you won't be able to effectively use Bazel to organize your development process for that application. Unfortunately, the majority of React developers don't even know what `npm run build` does under the hood.
 
 Now, let's explore why you would ever need to use Bazel. Bazel is particularly useful for orchestrating multiple projects with different languages in a monorepository. In an ideal scenario, you would have:
 
 - One hermetic toolchain and dependency setup for every language, regardless of the platform.
-- Build, test, run, and deploy configurations set up once, and then you can use  `bazel build/test/run //path:target`  to execute them.
+- Build, test, run, and deploy configurations set up once, and then you can use `bazel build/test/run //path:target` to execute them.
 
 Let's consider a JavaScript project (this applies to all its variants). A typical React application has the following structure:
 
@@ -52,27 +51,31 @@ To integrate this into a monorepo, we need to make it use the Node.js version of
 By the way, do you know how a React app is built? 🧐
 
 First, the source files are transpiled to a basic JavaScript version using tools like Babel. Then, the source needs to be bundled into a format that can be executed on the intended platform, such as a browser. The executable for the browser is an HTML file with JavaScript code. So, our bundle will simply consist of:
+
 ```plaintext
 build/
   ├── index.html     # Main HTML file
   ├── main.js        # Minified and bundled JavaScript file
 
 ```
-The  `index.html`  file will look like this:
+
+The `index.html` file will look like this:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My React App</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script src="main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My React App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="main.js"></script>
+  </body>
 </html>
 ```
+
 To achieve this, we use bundlers like Webpack, ESBuild, or Rust.
 
 Now, let's configure Bazel to build our app while keeping a few things in mind:
@@ -84,7 +87,7 @@ First, let's register the global, constant, hermetic toolchain in :
 
 ```python
 ####### Node.js version #########
-# By default, you get the node version from DEFAULT_NODE_VERSION 
+# By default, you get the node version from DEFAULT_NODE_VERSION
 # in @rules_nodejs//nodejs:repositories.bzl
 # Optionally, you can pin a different node version:
 bazel_dep(name = "rules_nodejs", version = "5.8.2")
@@ -92,18 +95,23 @@ node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(node_version = "16.14.2")
 #################################
 ```
-To test if Bazel is using the given version, we can create a  `hello.mjs`  file and run it with  `js_binary`  like this:
+
+To test if Bazel is using the given version, we can create a `hello.mjs` file and run it with `js_binary` like this:
+
 ```javascript
 // hello.mjs
 console.log(process.version);
 ```
+
 ```python
 js_binary(
     name = "hello",
     entry_point = "hello.mjs",
 )
 ```
+
 Great! Now let's configure the dependency manager:
+
 ```python
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl",
  "npm", dev_dependency = True)
@@ -128,23 +136,21 @@ npm.npm_translate_lock(
 use_repo(npm, "npm")
 ```
 
-
-
-`rules_js`  relies on  `pnpm-lock.yaml`. 
+`rules_js` relies on `pnpm-lock.yaml`.
 
 Run this commende to generate the pnpm lock file:
 
 `bazel run -- @pnpm//:pnpm --dir $PWD install --lockfile-only`
 
-
-So, now we have the Node.js version and the dependencies configured. how and where do we define the build rules for Bazel? 
+So, now we have the Node.js version and the dependencies configured. how and where do we define the build rules for Bazel?
 
 for every packages or app in order to build it ,we need to define the BUILD file in the root of this app
 with the right bazel rule to build
 
 for CRA app "aspect" team already has writen a rule that wrap "react-script" to build a CRA
 
-it is loaded from  `load("@npm//:react-scripts/package_json.bzl", cra_bin = "bin")` :
+it is loaded from `load("@npm//:react-scripts/package_json.bzl", cra_bin = "bin")` :
+
 ```python
 cra_bin.react_scripts(
     # Note: If you want to change the name make sure you update BUILD_PATH below accordingly
@@ -157,17 +163,17 @@ cra_bin.react_scripts(
     out_dirs = ["build"],
 )
 ```
-`@npm//:react-scripts/package_json.bzl` this  is  called a [Bazel labels]({{ site.baseurl}}/2023/10/16/bazel-labels.html).
 
-
+`@npm//:react-scripts/package_json.bzl` this is called a [Bazel labels]({{ site.baseurl}}/2023/10/16/bazel-labels.html).
 
 one think to note is that this bazel rule use `pnpm` so in `package.json` need to fix peer dependency:
+
 ```json
 "pnpm": {
     "//packageExtensions": "Fix missing dependencies in npm
      packages, see https://pnpm.io/package_json#pnpmpackageextensions",
     "packageExtensions": {
- 
+
       "postcss-loader": {
         "peerDependencies": {
           "postcss-flexbugs-fixes": "*",
@@ -178,11 +184,5 @@ one think to note is that this bazel rule use `pnpm` so in `package.json` need t
     }
   }
 ```
-
-
-
-
-
-
 
 Feel free to comment below if you have any thoughts or questions. Your input is highly appreciated!
